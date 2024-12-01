@@ -9,8 +9,7 @@ async function main() {
 
   // 1. Split input into 2 arrays of numbers
   // 2. Sort both arrays from smallest to largest number
-  // 3. Run a loop and find difference between the pair
-  // 4. Add difference to a new array and sum the total
+  // 3. Run a loop and find difference between the pair and sum
 
   const lines = example.split("\n");
   const columnOne: number[] = [];
@@ -31,16 +30,13 @@ async function main() {
   console.log("First column low to high", lowToHighOne);
   console.log("Second column low to high", lowToHighTwo);
 
-  const distances: number[] = [];
+  const total = lowToHighOne
+    .map((num, index) => {
+      return Math.abs(num - lowToHighTwo[index]);
+    })
+    .reduce((a, b) => a + b, 0);
 
-  for (let loop = 0; loop < lowToHighOne.length; loop++) {
-    const difference = Math.abs(lowToHighOne[loop] - lowToHighTwo[loop]);
-    console.log("Difference", difference);
-    distances.push(difference);
-  }
-
-  const totalDistance = distances.reduce((a, b) => a + b, 0);
-  console.log("Total of distances", totalDistance);
+  console.log("Total of distances", total);
 
   // Part 2
 
