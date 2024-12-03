@@ -9,10 +9,13 @@ async function main() {
 
   type IncreaseOrDecrease = "increase" | "decrease";
 
-  let safeReports = 0;
-  reports.forEach((report) => {
-    if (checkReport(report)) safeReports++;
-  });
+  const safeReports = reports.reduce((acc, report) => {
+    if (checkReport(report)) {
+      return acc + 1;
+    } else {
+      return acc;
+    }
+  }, 0);
 
   console.log("Safe reports:", safeReports);
 
