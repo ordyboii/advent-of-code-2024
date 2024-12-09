@@ -64,6 +64,7 @@ while (true) {
 console.log(visited.size);
 
 // Part 2
+// NOT SOLVED
 
 // const newInput = await readFile(`${import.meta.dirname}/example.txt`, "utf-8");
 // const newGrid = newInput.split("\n").map((row) => row.split(""));
