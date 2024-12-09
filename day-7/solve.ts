@@ -1,13 +1,19 @@
 import { readFile } from "fs/promises";
 
-const input = await readFile(`${import.meta.dirname}/input.txt`, "utf-8");
+const input = await readFile(`${import.meta.dirname}/example.txt`, "utf-8");
 
+// Parse into [{ test: 123, sequence [1,2,3] }]
 const calibrations = input.split("\n").map((line) => {
   const test = Number(line.split(":")[0]);
   const sequence = line.split(":")[1].split(" ").filter(Boolean).map(Number);
   return { test, sequence };
 });
 
+// Recursively call to find all operations of + * (part 1) and || (part 2)
+// Example: 3267: 81 40 27
+// 1: 3267, [81,40,27]
+// 2: 3267, [81,40,27] [+,+,+]
+// 3: Match length, evalute called
 function findOperators(
   { test, sequence }: (typeof calibrations)[0],
   operators: string[] = []
@@ -22,6 +28,7 @@ function findOperators(
   );
 }
 
+// Loop through the sequence
 function evaluateExpression(sequence: number[], operators: string[]) {
   let result = sequence[0];
   for (let i = 1; i < sequence.length; i++) {
