@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
-const file = new URL("input.txt", import.meta.url);
-const example = await readFile(file, "utf-8");
+const example = await readFile(join("app/4/example.txt"), "utf-8");
 
 const table = example.split("\n").map((row) => row.split(""));
 const word = "XMAS".split("");

@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
-const file = new URL("example.txt", import.meta.url);
-const example = await readFile(file, "utf-8");
+const example = await readFile(join("app/1/example.txt"), "utf-8");
 
 const lines = example.split("\n");
 const columnOne: number[] = [];
