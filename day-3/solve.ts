@@ -5,7 +5,7 @@ const example = await readFile(join("app/3/example.txt"), "utf-8");
 
 const matches = example.match(/mul\(\d+,\d+\)/g);
 
-const total = matches.reduce((acc, match) => {
+const total = matches?.reduce((acc, match) => {
   return acc + calculate(match);
 }, 0);
 
@@ -14,7 +14,7 @@ console.log("Total", total);
 const matches2 = example.match(/mul\(\d+,\d+\)|do\(\)|don't\(\)/g);
 
 let enabled = true;
-const total2 = matches2.reduce((acc, match) => {
+const total2 = matches2?.reduce((acc, match) => {
   if (match === "do()") {
     enabled = true;
   } else if (match === "don't()") {

@@ -1,54 +1,129 @@
 import { readFile } from "fs/promises";
+import { waitFor } from "../lib";
 
-const example = await readFile(`${import.meta.dirname}/input.txt`, "utf-8");
+const input = await readFile(`${import.meta.dirname}/example.txt`, "utf-8");
+const grid = input.split("\n").map((row) => row.split(""));
 
-const [block1, block2] = example.replace(/\r/g, "").split("\n\n");
+let [x, y] = getStartCoords(grid) ?? [];
 
-const rules = block1.split("\n").map((line) => line.split("|"));
-const updates = block2.split("\n").map((line) => line.split(","));
-
-const correctUpdates = updates.filter((update) => checkRules(rules, update));
-console.log(getMiddleSum(correctUpdates));
-
-const notInOrderUpdates = updates.filter(
-  (update) => !checkRules(rules, update)
-);
-
-const inOrderUpdates = notInOrderUpdates.map((update) => {
-  const pages = new Set(update);
-  const orderedPages: string[] = [];
-
-  while (pages.size > 0) {
-    for (const page of pages) {
-      const canPlace = [...pages].every((otherPage) => {
-        const rule = rules.find(([x, y]) => x === otherPage && y === page);
-        return !rule || orderedPages.includes(rule[0]);
-      });
-
-      if (canPlace) {
-        orderedPages.push(page);
-        pages.delete(page);
-        break;
+function getStartCoords(grid: string[][]) {
+  for (let x = 0; x < grid.length; x++) {
+    for (let y = 0; y < grid[0].length; y++) {
+      if (grid[x][y] === "^") {
+        return [x, y];
       }
     }
   }
-
-  return orderedPages;
-});
-
-console.log(getMiddleSum(inOrderUpdates));
-
-function checkRules(rules: string[][], update: string[]) {
-  return rules.every(([x, y]) => {
-    const indexX = update.indexOf(x);
-    const indexY = update.indexOf(y);
-    return indexX === -1 || indexY === -1 || indexX < indexY;
-  });
 }
 
-function getMiddleSum(updates: string[][]) {
-  return updates.reduce((acc, update) => {
-    const middle = update[Math.floor(update.length / 2)];
-    return acc + Number(middle);
-  }, 0);
+// Simulate the walk
+// Can only travel up, down, left and right
+const directions = [
+  { dx: -1, dy: 0 }, // Up
+  { dx: 0, dy: 1 }, // Right
+  { dx: 1, dy: 0 }, // Down
+  { dx: 0, dy: -1 }, // Left
+];
+
+let direction = 0; // Up: 0, Right: 1, Down: 2, Left: 3
+const visited = new Set<string>();
+while (true) {
+  grid[x][y] = "X";
+  visited.add(`${x}:${y}`);
+
+  console.log(`Current position, ${x}:${y}:${direction}`);
+  console.log(grid.map((row) => row.join(" ")).join("\n"));
+
+  // Debugging
+  // await waitFor(100);
+
+  // Check the next position
+  const nextX = x + directions[direction].dx;
+  const nextY = y + directions[direction].dy;
+
+  // Out of bounds
+  if (
+    nextX < 0 ||
+    nextX >= grid.length ||
+    nextY < 0 ||
+    nextY >= grid[0].length
+  ) {
+    break;
+  }
+
+  if (grid[nextX][nextY] === "#") {
+    // Turn 90 degrees right to avoid the obstacle
+    direction = (direction + 1) % 4;
+  } else {
+    // Move forward
+    x = nextX;
+    y = nextY;
+  }
 }
+
+console.log(visited.size);
+
+// Part 2
+
+// const newInput = await readFile(`${import.meta.dirname}/example.txt`, "utf-8");
+// const newGrid = newInput.split("\n").map((row) => row.split(""));
+
+// let [newX, newY] = getStartCoords(newGrid) ?? [];
+
+// let obstacles = 0;
+// for (const place of visited) {
+//   if (await willLoop(place)) obstacles++;
+// }
+
+// console.log(obstacles);
+
+// async function willLoop(place: string) {
+//   const [oX, oY] = place.split(":").map(Number);
+//   if (newGrid[oX][oY] === "#") return false;
+
+//   newGrid[oX][oY] = "#";
+
+//   let direction = 0;
+//   const seen = new Set<string>();
+//   while (true) {
+//     const state = `${newX}:${newY}:${direction}`;
+//     if (seen.has(state)) {
+//       newGrid[oX][oY] = ".";
+//       return true;
+//     }
+
+//     visited.add(`${newX}:${newY}`);
+
+//     console.log(`Current position, ${newX}:${newY}:${direction}`);
+//     console.log(newGrid.map((row) => row.join(" ")).join("\n"));
+
+//     // Debugging
+//     await waitFor(1000);
+
+//     // Check the next position
+//     const nextX = newX + directions[direction].dx;
+//     const nextY = newY + directions[direction].dy;
+
+//     // Out of bounds
+//     if (
+//       nextX < 0 ||
+//       nextX >= newGrid.length ||
+//       nextY < 0 ||
+//       nextY >= newGrid[0].length
+//     ) {
+//       break;
+//     }
+
+//     if (newGrid[nextX][nextY] === "#") {
+//       // Turn 90 degrees right to avoid the obstacle
+//       direction = (direction + 1) % 4;
+//     } else {
+//       // Move forward
+//       newX = nextX;
+//       newY = nextY;
+//     }
+//   }
+
+//   newGrid[oX][oY] = ".";
+//   return false;
+// }

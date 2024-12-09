@@ -3,12 +3,12 @@ import { join } from "node:path";
 
 const example = await readFile(join("app/4/example.txt"), "utf-8");
 
-const table = example.split("\n").map((row) => row.split(""));
+const grid = example.split("\n").map((row) => row.split(""));
 const word = "XMAS".split("");
 
 let count = 0;
-for (let x = 0; x < table.length; x++) {
-  for (let y = 0; y < table[0].length; y++) {
+for (let x = 0; x < grid.length; x++) {
+  for (let y = 0; y < grid[0].length; y++) {
     count += checkAllDirections(x, y);
   }
 }
@@ -16,9 +16,9 @@ for (let x = 0; x < table.length; x++) {
 console.log("XMAS count", count);
 
 let newCount = 0;
-for (let x = 0; x < table.length; x++) {
-  for (let y = 0; y < table[0].length; y++) {
-    if (table[x][y] === "A") {
+for (let x = 0; x < grid.length; x++) {
+  for (let y = 0; y < grid[0].length; y++) {
+    if (grid[x][y] === "A") {
       newCount += checkDiagonals(x, y);
     }
   }
@@ -30,26 +30,23 @@ console.log("New MAS count", newCount);
 function checkAllDirections(x: number, y: number) {
   // Map of directions
   const directions = [
-    [0, 1],
-    [0, -1],
-    [1, 0],
-    [-1, 0],
-    [1, 1],
-    [1, -1],
-    [-1, 1],
-    [-1, -1],
+    { dx: 0, dy: 1 },
+    { dx: 0, dy: -1 },
+    { dx: 1, dy: 0 },
+    { dx: -1, dy: 0 },
+    { dx: 1, dy: 1 },
+    { dx: 1, dy: -1 },
+    { dx: -1, dy: 1 },
+    { dx: -1, dy: -1 },
   ];
 
   // Check if XMAS exists in all directions using map and return a total
-  return directions.reduce((acc, [dx, dy]) => {
+  return directions.reduce((acc, { dx, dy }) => {
     const match = word.every(
-      (char, index) => char === table?.[x + index * dx]?.[y + index * dy]
+      (char, index) => char === grid?.[x + index * dx]?.[y + index * dy]
     );
 
-    if (match) {
-      return acc + 1;
-    }
-    return acc;
+    return match ? acc + 1 : acc;
   }, 0);
 }
 
@@ -61,41 +58,38 @@ function checkDiagonals(x: number, y: number) {
   // Map of the 4 patterns
   const patterns = [
     [
-      ["M", -1, -1],
-      ["M", -1, 1],
-      ["S", 1, -1],
-      ["S", 1, 1],
+      { char: "M", dx: -1, dy: -1 },
+      { char: "M", dx: -1, dy: 1 },
+      { char: "S", dx: 1, dy: -1 },
+      { char: "S", dx: 1, dy: 1 },
     ],
     [
-      ["S", -1, -1],
-      ["S", -1, 1],
-      ["M", 1, -1],
-      ["M", 1, 1],
+      { char: "S", dx: -1, dy: -1 },
+      { char: "S", dx: -1, dy: 1 },
+      { char: "M", dx: 1, dy: -1 },
+      { char: "M", dx: 1, dy: 1 },
     ],
     [
-      ["M", -1, -1],
-      ["S", -1, 1],
-      ["M", 1, -1],
-      ["S", 1, 1],
+      { char: "M", dx: -1, dy: -1 },
+      { char: "S", dx: -1, dy: 1 },
+      { char: "M", dx: 1, dy: -1 },
+      { char: "S", dx: 1, dy: 1 },
     ],
     [
-      ["S", -1, -1],
-      ["M", -1, 1],
-      ["S", 1, -1],
-      ["M", 1, 1],
+      { char: "S", dx: -1, dy: -1 },
+      { char: "M", dx: -1, dy: 1 },
+      { char: "S", dx: 1, dy: -1 },
+      { char: "M", dx: 1, dy: 1 },
     ],
   ];
 
   // Map over and check each pattern
   return patterns.reduce((acc, pattern) => {
     const match = pattern.every(
-      ([char, dx, dy]) =>
-        table?.[x + (dx as number)]?.[y + (dy as number)] === char
+      ({ char, dx, dy }) =>
+        grid?.[x + (dx as number)]?.[y + (dy as number)] === char
     );
 
-    if (match) {
-      return acc + 1;
-    }
-    return acc;
+    return match ? acc + 1 : acc;
   }, 0);
 }
