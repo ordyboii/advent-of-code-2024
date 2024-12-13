@@ -1,10 +1,13 @@
 import { readFile } from "fs/promises";
-import { waitFor } from "../lib";
 
 const input = await readFile(`${import.meta.dirname}/example.txt`, "utf-8");
 const grid = input.split("\n").map((row) => row.split(""));
 
 let [x, y] = getStartCoords(grid) ?? [];
+
+function waitFor(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function getStartCoords(grid: string[][]) {
   for (let x = 0; x < grid.length; x++) {

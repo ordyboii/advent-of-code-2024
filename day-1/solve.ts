@@ -26,11 +26,9 @@ console.log("Total of distances", total);
 
 let score = 0;
 columnOne.forEach((num) => {
-  const instances = columnTwo.reduce((a, b) => {
-    if (num === b) {
-      return a + 1;
-    }
-    return a;
+  const instances = columnTwo.reduce((acc, b) => {
+    if (num === b) return acc + 1;
+    return acc;
   }, 0);
 
   console.log(`${num} appears ${instances} times in column 2`);
