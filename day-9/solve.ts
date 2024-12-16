@@ -1,59 +1,55 @@
 import { readFile } from "fs/promises";
 
-const input = await readFile(`${import.meta.dirname}/example.txt`, { 
-  encoding: "utf8"
+const input = await readFile(`${import.meta.dirname}/input.txt`, {
+  encoding: "utf8",
 });
 
-function convertDenseDiskMapToFull(diskmap: string) {
+function convertDiskMap(diskmap: string) {
+  const split = diskmap.split("").map(Number);
+  const fs: string[] = [];
+
   let id = 0;
-  return diskmap.split("").map((char, idx) => {
-    if (idx % 2 === 0) {
-      const files = id.toString().repeat(Number(char));
+  for (let i = 0; i < split.length; i++) {
+    const count = Number(split[i]);
+    if (i % 2 === 0) {
+      const files = Array(count).fill(id.toString());
       id++;
-      return files;
-    } else if (idx % 2 === 1) {
-      return ".".repeat(Number(char));
-    } else {
-      return;
-    }
-  }).join("");
-}
-
-const diskmap = convertDenseDiskMapToFull(input);
-console.log(diskmap);
-
-function compactDiskmap(diskmap: string) {
-  const chars = diskmap.split("");
-  const compacted: string[] = [];
-  let dotCount = 0;
-
-  for (let i = 0; i < chars.length; i++) {
-    if (chars[i] === ".") {
-      dotCount++;
-    } else {
-      // Move characters from the end based on the dot count
-      // Problem while loop works up until it encounters dots on the other side
-      while (chars.at(-1) === ".") {
-        chars.pop();
+      for (const file of files) {
+        fs.push(file);
       }
-      while (dotCount > 0 && chars.at(-1) !== ".") {
-        const char = chars.pop()!;
-        compacted.push(char);
-        dotCount--;
+    } else {
+      const dots = ".".repeat(count);
+      for (const dot of dots) {
+        fs.push(dot);
       }
-      compacted.push(chars[i]);
     }
   }
 
-  return compacted.join("");
+  return fs;
 }
 
-const compacted = compactDiskmap(diskmap);
-// Part 1 and part 2, not solved yet
-// const checksum = compacted.reduce((acc, num, idx) => {
-//   const sum = acc += (idx * Number(num));
-//   console.log(sum, "index", idx, "num", num);
-//   return sum;
-// }, 0);
+function compactDiskMap(fs: string[]) {
+  for (let i = 0; i < fs.length; i++) {
+    if (fs[i] === ".") {
+      while (true) {
+        const temp = fs.pop()!;
+        if (temp === ".") {
+          continue;
+        } else {
+          fs[i] = temp;
+          break;
+        }
+      }
+    }
+  }
+  return fs;
+}
 
-console.log(compacted);
+const fs = convertDiskMap(input);
+const compact = compactDiskMap(fs);
+
+const checksum = compact.reduce((acc, id, idx) => {
+  return acc + Number(id) * idx;
+}, 0);
+
+console.log(checksum);
