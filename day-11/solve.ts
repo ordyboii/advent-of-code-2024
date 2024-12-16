@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-// Last one this year
+
 const input = await readFile(`${import.meta.dirname}/input.txt`, {
   encoding: "utf8",
 });
